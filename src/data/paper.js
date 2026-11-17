@@ -12,7 +12,8 @@ export const PAPER = [
       { n: '2', m: 2, kl: 'CO2 KL1', q: 'List any four applications of asymmetric encryption.',
         a: `<ol><li>Confidentiality: encrypting messages with the receiver's public key.</li><li>Digital signatures: proof of origin and non-repudiation.</li><li>Key exchange: distributing symmetric session keys (RSA, Diffie–Hellman, ECDH).</li><li>Authentication: identity proof in TLS, SSH and X.509 certificates, secure email (PGP).</li></ol>` },
       { n: '3', m: 2, kl: 'CO3 KL1', q: 'Mention any two features of MD5.',
-        a: `<ol><li>Takes a message of any length and produces a fixed <b>128-bit</b> digest.</li><li>Processes the message in <b>512-bit blocks</b>, with four rounds of 16 steps each (64 steps), using a four-word buffer A, B, C, D.</li></ol>
+        a: `<div data-w="vids:q-3"></div>
+<ol><li>Takes a message of any length and produces a fixed <b>128-bit</b> digest.</li><li>Processes the message in <b>512-bit blocks</b>, with four rounds of 16 steps each (64 steps), using a four-word buffer A, B, C, D.</li></ol>
 <p>(Also acceptable: fast and simple, little-endian 32-bit words, now broken by collision attacks.)</p>` },
       { n: '4', m: 2, kl: 'CO4 KL1', q: 'Define Digital Signature Standard (DSS).',
         a: `<div data-w="vids:q-4"></div>
@@ -64,7 +65,8 @@ Bob   gets Y_M = 2, computes K₂ = 2^6 mod 7 = 1; Mallory: Y_B^X_M = 1^4 mod 7 
 <ul><li>Pads the message to 448 mod 512 and appends a 64-bit length, then processes block by block.</li><li>Five-word buffer A–E initialised with fixed constants; 80 steps in 4 rounds, with message expansion W<sub>t</sub> = ROTL¹(W<sub>t−3</sub> ⊕ W<sub>t−8</sub> ⊕ W<sub>t−14</sub> ⊕ W<sub>t−16</sub>).</li><li>Longer digest than MD5, so stronger against brute force (2⁸⁰ for collisions in SHA-1, 2¹²⁸ for SHA-256).</li><li>One-way, avalanche, collision resistant; standardised. SHA-3 uses a different (sponge) design.</li></ul>
 <p><b>Applications (3).</b> Digital signatures (sign the digest, DSS); HMAC for message authentication in IPsec and TLS; X.509 certificates; file and download integrity, Git; password hashing with salt; blockchain proof of work.</p>` },
       { n: '7a(ii)', m: 8, kl: 'CO3 KL2', q: 'Describe the concept of Message Authentication Code (MAC) and elaborate its applications for message authentication and confidentiality with neat diagram.',
-        a: `<p><b>Concept (2).</b> A MAC is a fixed-size tag T = MAC(K, M) computed from the message and a shared secret key K. The sender appends T. The receiver recomputes the tag with K and compares. A match shows the message is unaltered (integrity) and came from someone holding K (authentication).</p>
+        a: `<div data-w="vids:q-7aii"></div>
+<p><b>Concept (2).</b> A MAC is a fixed-size tag T = MAC(K, M) computed from the message and a shared secret key K. The sender appends T. The receiver recomputes the tag with K and compares. A match shows the message is unaltered (integrity) and came from someone holding K (authentication).</p>
 <p><b>Message authentication (2).</b></p>
 <div data-w="diag:macauth"></div>
 <p><b>Message authentication and confidentiality (3).</b> A MAC does not hide the message, so add encryption with a second key K<sub>2</sub>. Authenticate then encrypt: send E(K<sub>2</sub>, M ‖ MAC(K<sub>1</sub>, M)). Encrypt then authenticate (preferred): C = E(K<sub>2</sub>, M), send C ‖ MAC(K<sub>1</sub>, C); the receiver checks the tag before decrypting.</p>
