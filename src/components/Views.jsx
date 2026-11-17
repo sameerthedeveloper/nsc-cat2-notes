@@ -3,7 +3,8 @@ import { MODS } from '../data/content.js';
 import { PAPER } from '../data/paper.js';
 import { T } from '../lib.js';
 import Html from './Html.jsx';
-import { Rsa } from './widgets.jsx';
+import { YT } from '../data/videos.js';
+import { NoVideo, Rsa, Vids } from './widgets.jsx';
 
 const qid = (n) => 'q-' + n.replace(/\W/g, '');
 const btnLink = { textDecoration: 'none' };
@@ -15,6 +16,8 @@ const Tag = ({ t }) => <span className={'tag' + (t.pr === 'Very High' ? ' vh' : 
 const Meta = ({ t }) => (
   <div className="meta"><span className="mod">{MOD_NUM(t.mod)}: {MOD_NAME(t.mod)}</span><Prio t={t} /></div>
 );
+
+const Lessons = ({ id }) => (YT[id] ? <Vids id={id} /> : <NoVideo />);
 
 const SEQ = [
   ['Public key cryptosystems', 'm3-1'], ['RSA algorithm', 'm3-2'], ['Diffie–Hellman key exchange', 'm3-3'], ['Key management', 'm3-4'],
@@ -79,6 +82,7 @@ export function Topic({ t, done, onToggleDone, onPractice }) {
     <>
       <Meta t={t} />
       <h1>{t.title}</h1>
+      <Lessons id={t.id} />
       <Html html={t.body} />
       <hr className="rule" />
       <h2>Exam questions</h2>
@@ -115,6 +119,7 @@ export function PaperView() {
       <h1>Last year’s paper with full answers</h1>
       <p>Every question from the paper, solved the way you should write it. Questions marked OR are alternatives: you answer one of each pair. The marks beside each answer show how the 8 or 16 marks are usually split.</p>
       <div className="tip"><b>What it tells you.</b> Part A is definitions from both modules. Part B pairs Module III (public key principles, ECC, man in the middle) with Module IV (SHA, MAC, hash types). Part C is always a numerical: RSA or Diffie–Hellman. Practise both until the arithmetic is automatic.</div>
+      <Vids id="paper" />
       <ol className="order">
         {all.map((q) => (
           <li key={q.n}><a href={'#' + qid(q.n)}>Q{q.n}</a><span className="tag">{q.m} marks</span></li>
@@ -153,7 +158,8 @@ export function AllView() {
         <section key={t.id} className="all-sec">
           <Meta t={t} />
           <h1>{t.title}</h1>
-              <Html html={t.body} />
+          <Lessons id={t.id} />
+          <Html html={t.body} />
           <h2>Exam questions</h2>
           {t.qa.map((q, j) => (
             <details key={j} className="qa" open>

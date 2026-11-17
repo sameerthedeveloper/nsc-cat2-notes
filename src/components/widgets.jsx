@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { NOEMBED, V, YT } from '../data/videos.js';
 import { DIAG, bitDiff, dh, ecAdd, ecMul, ecPoints, hmac, inv, md5, onCurve, ptStr, rsa, sha } from '../engines.js';
 
 const Html = ({ html }) => <div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: html }} />;
@@ -11,6 +12,67 @@ const Num = ({ label, value, onChange, w = 90 }) => (
 );
 const run = (fn) => { try { return { r: fn() }; } catch (e) { return { err: e.message }; } };
 const trace = (t, mod) => t.steps.map((s) => `bit ${s.i} = ${s.bit}   base = ${s.base}${s.bit ? `   result × base mod ${mod} = ${s.r}` : '   (skip)'}`).join('\n');
+
+/* ---------- video lessons ---------- */
+export function Vids({ id }) {
+  const y = YT[id];
+  const [cur, setCur] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const v = y.v[cur];
+  const out = NOEMBED.has(v);
+  const poster = { backgroundImage: `url(https://i.ytimg.com/vi/${v}/hqdefault.jpg)` };
+  const cap = <span className="vcap">{V[v][0]}<span className="vcapch">{V[v][2]}</span></span>;
+  return (
+    <div className="wg vids">
+      <h4>Video lessons</h4>
+      <div className="vplay">
+        {playing && !out ? (
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${v}?rel=0&autoplay=1`}
+            title={V[v][0]}
+            allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        ) : out ? (
+          <a className="vposter" href={`https://www.youtube.com/watch?v=${v}`} target="_blank" rel="noopener noreferrer" aria-label={`Open ${V[v][0]} on YouTube`} style={{ ...poster, textDecoration: 'none' }}>
+            <span className="vbtn">Open on YouTube</span>{cap}
+          </a>
+        ) : (
+          <button className="vposter" type="button" aria-label={`Play ${V[v][0]}`} style={poster} onClick={() => setPlaying(true)}>
+            <span className="vbtn">Play</span>{cap}
+          </button>
+        )}
+      </div>
+      <ol className="vlist">
+        {y.v.map((vid, i) => (
+          <li key={vid}>
+            <button type="button" className={i === cur ? 'on' : ''} onClick={() => { setCur(i); setPlaying(false); }}>
+              <span className="vt">{V[vid][0]}<span className="vch">{V[vid][2]}</span></span>
+              <span className="vd">{V[vid][1]} min</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      {out && <p className="vnote">The uploader has switched off embedding for this video, so it opens on YouTube.</p>}
+      {y.note && <p className="vnote">{y.note}</p>}
+      <p className="vnote">
+        {y.pl.map(([label, href]) => (
+          <span key={href}><a href={href} target="_blank" rel="noopener noreferrer">{label}</a>{' '}</span>
+        ))}
+        <a href={`https://www.youtube.com/watch?v=${v}`} target="_blank" rel="noopener noreferrer">Open this lesson on YouTube</a>
+      </p>
+    </div>
+  );
+}
+
+export function NoVideo() {
+  return (
+    <p className="novideo">
+      Neither Neso Academy nor 4G Silver Academy has a lesson on this topic. The notes and tools on this page cover it in full.
+    </p>
+  );
+}
 
 /* ---------- RSA ---------- */
 export function Rsa() {

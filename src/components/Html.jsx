@@ -1,9 +1,10 @@
-import { Dh, Diag, Ecc, HashLab, Inverse, MacLab, Rsa } from './widgets.jsx';
+import { Dh, Diag, Ecc, HashLab, Inverse, MacLab, Rsa, Vids } from './widgets.jsx';
 
 const RE = /<div data-w="([^"]+)"><\/div>/g;
 
 function widget(key, k) {
   if (key.startsWith('diag:')) return <Diag key={k} name={key.slice(5)} />;
+  if (key.startsWith('vids:')) return <Vids key={k} id={key.slice(5)} />;
   if (key === 'rsa') return <Rsa key={k} />;
   if (key === 'dh') return <Dh key={k} />;
   if (key === 'ecc') return <Ecc key={k} />;

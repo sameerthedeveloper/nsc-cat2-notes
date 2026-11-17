@@ -15,7 +15,8 @@ export const PAPER = [
         a: `<ol><li>Takes a message of any length and produces a fixed <b>128-bit</b> digest.</li><li>Processes the message in <b>512-bit blocks</b>, with four rounds of 16 steps each (64 steps), using a four-word buffer A, B, C, D.</li></ol>
 <p>(Also acceptable: fast and simple, little-endian 32-bit words, now broken by collision attacks.)</p>` },
       { n: '4', m: 2, kl: 'CO4 KL1', q: 'Define Digital Signature Standard (DSS).',
-        a: `<p>DSS is the NIST standard (FIPS 186) for digital signatures. It specifies the <b>Digital Signature Algorithm (DSA)</b>, which hashes the message with SHA, then signs the digest with the sender's private key and a random number k to produce a pair <b>(r, s)</b>. The receiver verifies with the sender's public key. It provides signatures only, not encryption or key exchange.</p>` },
+        a: `<div data-w="vids:q-4"></div>
+<p>DSS is the NIST standard (FIPS 186) for digital signatures. It specifies the <b>Digital Signature Algorithm (DSA)</b>, which hashes the message with SHA, then signs the digest with the sender's private key and a random number k to produce a pair <b>(r, s)</b>. The receiver verifies with the sender's public key. It provides signatures only, not encryption or key exchange.</p>` },
       { n: '5', m: 2, kl: 'CO3 KL1', q: 'What is meant by avalanche effect?',
         a: `<p>The avalanche effect means that a <b>small change in the input</b> (even one bit) causes a <b>large change in the output</b>, about half of the output bits flip. In a hash function this makes the digest unpredictable and stops an attacker finding related inputs. Example: SHA-256 of "Hello, CAT-2" and "Hello, CAT-3" share almost nothing.</p>` },
     ],
@@ -24,7 +25,8 @@ export const PAPER = [
     part: 'Part B: 2 × 16 = 32 marks',
     qs: [
       { n: '6a(i)', m: 8, kl: 'CO2 KL2', q: 'Describe the working principles of public key cryptography with suitable diagram.',
-        a: `<p><b>Idea (1).</b> Each user has a <b>key pair</b>: a public key KU (shared with everyone) and a private key KR (kept secret). What one key does, only the other can undo. It is based on a trapdoor one-way function, so KR cannot be found from KU.</p>
+        a: `<div data-w="vids:q-6ai"></div>
+<p><b>Idea (1).</b> Each user has a <b>key pair</b>: a public key KU (shared with everyone) and a private key KR (kept secret). What one key does, only the other can undo. It is based on a trapdoor one-way function, so KR cannot be found from KU.</p>
 <p><b>Ingredients (1).</b> Plaintext, encryption algorithm, public and private keys, ciphertext, decryption algorithm.</p>
 <p><b>Confidentiality (2.5).</b> Alice encrypts with Bob's public key: C = E(KU<sub>b</sub>, M). Only Bob's private key opens it: M = D(KR<sub>b</sub>, C).</p>
 <div data-w="diag:pkconf"></div>
@@ -32,7 +34,8 @@ export const PAPER = [
 <div data-w="diag:pkauth"></div>
 <p><b>Both (1).</b> C = E(KU<sub>b</sub>, E(KR<sub>a</sub>, M)).</p>` },
       { n: '6a(ii)', m: 8, kl: 'CO2 KL2', q: 'Explain the concept of Elliptic Curve Cryptography (ECC) with an example.',
-        a: `<p><b>Concept (2).</b> ECC uses the group of points on an elliptic curve y² = x³ + ax + b (mod p). The private key is an integer d; the public key is the point Q = dG, where G is a public base point. Given G and Q, finding d is the <b>elliptic curve discrete logarithm problem</b>, infeasible for large curves. So ECC gives RSA-level security with much smaller keys (256-bit ECC ≈ 3072-bit RSA).</p>
+        a: `<div data-w="vids:q-6aii"></div>
+<p><b>Concept (2).</b> ECC uses the group of points on an elliptic curve y² = x³ + ax + b (mod p). The private key is an integer d; the public key is the point Q = dG, where G is a public base point. Given G and Q, finding d is the <b>elliptic curve discrete logarithm problem</b>, infeasible for large curves. So ECC gives RSA-level security with much smaller keys (256-bit ECC ≈ 3072-bit RSA).</p>
 <p><b>Arithmetic (1.5).</b> Addition: λ = (y₂−y₁)/(x₂−x₁); doubling: λ = (3x₁²+a)/(2y₁); x₃ = λ² − x₁ − x₂; y₃ = λ(x₁−x₃) − y₁ (all mod p).</p>
 <p><b>Example: ECC Diffie–Hellman (3.5).</b> Curve y² = x³ + 2x + 2 mod 17, G = (5, 1).</p>
 <pre>Alice private n_A = 3  →  P_A = 3G = (10, 6)
@@ -42,7 +45,8 @@ Bob:   K = n_B × P_A = 4 × (10, 6) = 12G = (0, 11)
 Shared secret point (0, 11)</pre>
 <p><b>Benefits (1).</b> Small keys, low computation, suited to mobile and IoT.</p>` },
       { n: '6b', m: 16, kl: 'CO2 KL2', or: true, q: 'Discuss the vulnerabilities of key exchange algorithms in the presence of Man-in-the-Middle attacks with suitable example.',
-        a: `<p><b>Background (3).</b> Diffie–Hellman lets A and B agree on a key K = α^(X<sub>A</sub>X<sub>B</sub>) mod q over an open channel, but the exchanged values Y<sub>A</sub> and Y<sub>B</sub> are <b>not authenticated</b>. Anyone on the path can replace them. The same weakness applies to any unauthenticated key exchange, including RSA key transport and ECDH.</p>
+        a: `<div data-w="vids:q-6b"></div>
+<p><b>Background (3).</b> Diffie–Hellman lets A and B agree on a key K = α^(X<sub>A</sub>X<sub>B</sub>) mod q over an open channel, but the exchanged values Y<sub>A</sub> and Y<sub>B</sub> are <b>not authenticated</b>. Anyone on the path can replace them. The same weakness applies to any unauthenticated key exchange, including RSA key transport and ECDH.</p>
 <p><b>Attack (5).</b> Mallory sits between Alice and Bob.</p>
 <div data-w="diag:dhmitm"></div>
 <ol><li>Alice sends Y<sub>A</sub>. Mallory intercepts it and sends Y<sub>M</sub> = α^X<sub>M</sub> mod q to Bob.</li><li>Bob sends Y<sub>B</sub>. Mallory intercepts it and sends Y<sub>M</sub> to Alice.</li><li>Alice computes K₁ = Y<sub>M</sub>^X<sub>A</sub> mod q. Mallory computes the same key as Y<sub>A</sub>^X<sub>M</sub>.</li><li>Bob computes K₂ = Y<sub>M</sub>^X<sub>B</sub> mod q. Mallory computes the same key as Y<sub>B</sub>^X<sub>M</sub>.</li><li>Mallory decrypts each message with one key, reads or changes it, and re-encrypts it with the other. Neither side detects anything.</li></ol>
@@ -53,7 +57,8 @@ Bob   gets Y_M = 2, computes K₂ = 2^6 mod 7 = 1; Mallory: Y_B^X_M = 1^4 mod 7 
 <p><b>Consequences (1).</b> Eavesdropping, message modification, impersonation, no confidentiality or integrity.</p>
 <p><b>Countermeasures (3).</b> Digital signatures on the exchanged values, X.509 certificates issued by a trusted CA, authenticated DH (station-to-station protocol with signatures and MAC), pre-shared keys, and out-of-band verification of key fingerprints. Also use a large prime q and a primitive root, and cookies to resist clogging.</p>` },
       { n: '7a(i)', m: 8, kl: 'CO3 KL2', q: 'Elucidate the features of Secure Hash Algorithm (SHA) with its application.',
-        a: `<p><b>Definition (1).</b> SHA is a family of NIST hash functions (FIPS 180). SHA-1 takes a message under 2⁶⁴ bits, uses 512-bit blocks and gives a 160-bit digest.</p>
+        a: `<div data-w="vids:q-7ai"></div>
+<p><b>Definition (1).</b> SHA is a family of NIST hash functions (FIPS 180). SHA-1 takes a message under 2⁶⁴ bits, uses 512-bit blocks and gives a 160-bit digest.</p>
 <p><b>Features (4).</b></p>
 <table><tr><th></th><th>SHA-1</th><th>SHA-256</th><th>SHA-512</th></tr><tr><td>Digest</td><td>160</td><td>256</td><td>512</td></tr><tr><td>Block</td><td>512</td><td>512</td><td>1024</td></tr><tr><td>Steps</td><td>80</td><td>64</td><td>80</td></tr></table>
 <ul><li>Pads the message to 448 mod 512 and appends a 64-bit length, then processes block by block.</li><li>Five-word buffer A–E initialised with fixed constants; 80 steps in 4 rounds, with message expansion W<sub>t</sub> = ROTL¹(W<sub>t−3</sub> ⊕ W<sub>t−8</sub> ⊕ W<sub>t−14</sub> ⊕ W<sub>t−16</sub>).</li><li>Longer digest than MD5, so stronger against brute force (2⁸⁰ for collisions in SHA-1, 2¹²⁸ for SHA-256).</li><li>One-way, avalanche, collision resistant; standardised. SHA-3 uses a different (sponge) design.</li></ul>
@@ -66,7 +71,8 @@ Bob   gets Y_M = 2, computes K₂ = 2^6 mod 7 = 1; Mallory: Y_B^X_M = 1^4 mod 7 
 <div data-w="diag:macconf"></div>
 <p><b>Applications (1).</b> IPsec and TLS (HMAC), SSH, banking messages, file integrity, challenge-response login. It gives no non-repudiation because both sides hold K.</p>` },
       { n: '7b', m: 16, kl: 'CO3 KL2', or: true, q: 'Discuss the different types of cryptographic hash algorithms and explain its operation with suitable diagrams.',
-        a: `<p><b>Hash function and requirements (2).</b> H maps any-length input to a fixed-length digest; needs preimage, second-preimage and collision resistance, plus the avalanche effect.</p>
+        a: `<div data-w="vids:q-7b"></div>
+<p><b>Hash function and requirements (2).</b> H maps any-length input to a fixed-length digest; needs preimage, second-preimage and collision resistance, plus the avalanche effect.</p>
 <p><b>Types (3).</b></p>
 <table><tr><th>Family</th><th>Examples</th><th>Design</th></tr><tr><td>MD family</td><td>MD5 (128-bit)</td><td>Merkle–Damgård</td></tr><tr><td>SHA-1 / SHA-2</td><td>SHA-1, 224, 256, 384, 512</td><td>Merkle–Damgård</td></tr><tr><td>SHA-3</td><td>Keccak</td><td>Sponge</td></tr><tr><td>RIPEMD, Whirlpool</td><td>RIPEMD-160, Whirlpool</td><td>Parallel lines / block cipher based</td></tr><tr><td>Keyed (MACs)</td><td>HMAC, CMAC</td><td>Hash or cipher with a key</td></tr></table>
 <p><b>General operation, with diagram (4).</b> Pad and append length; split into Y₁…Y<sub>N</sub>; chain the compression function f: CV₀ = IV, CV<sub>i</sub> = f(CV<sub>i−1</sub>, Y<sub>i</sub>); digest = CV<sub>N</sub>.</p>
@@ -80,7 +86,8 @@ Bob   gets Y_M = 2, computes K₂ = 2^6 mod 7 = 1; Mallory: Y_B^X_M = 1^4 mod 7 
     part: 'Part C: 1 × 8 = 8 marks',
     qs: [
       { n: '8a', m: 8, kl: 'CO2 KL3', q: 'Alice wants to securely send a message to Bob using the RSA algorithm. Given the plaintext message M = 7, and the RSA parameters p = 11, q = 13, and e = 11, perform the encryption and decryption to show how Bob can recover the original message.',
-        a: `<p><b>Key generation (3).</b></p>
+        a: `<div data-w="vids:q-8a"></div>
+<p><b>Key generation (3).</b></p>
 <pre>n = p × q = 11 × 13 = 143
 φ(n) = (p − 1)(q − 1) = 10 × 12 = 120
 gcd(11, 120) = 1, so e = 11 is valid
@@ -105,7 +112,8 @@ M = 7</pre>
 <p>Bob recovers the original message M = 7. ✓</p>
 <div data-w="rsa"></div>` },
       { n: '8b', m: 8, kl: 'CO2 KL3', or: true, q: 'User A and User B want to establish a shared secret key using the Diffie-Hellman algorithm. Given that q = 7 and the primitive root is 5, and assuming user A\'s private key X_A = 3 and user B\'s private key X_B = 6, compute the public keys for both users and determine the shared secret key.',
-        a: `<p><b>Given (1).</b> q = 7, α = 5, X<sub>A</sub> = 3, X<sub>B</sub> = 6. (5 is a primitive root of 7: 5¹ = 5, 5² = 4, 5³ = 6, 5⁴ = 2, 5⁵ = 3, 5⁶ = 1.)</p>
+        a: `<div data-w="vids:q-8b"></div>
+<p><b>Given (1).</b> q = 7, α = 5, X<sub>A</sub> = 3, X<sub>B</sub> = 6. (5 is a primitive root of 7: 5¹ = 5, 5² = 4, 5³ = 6, 5⁴ = 2, 5⁵ = 3, 5⁶ = 1.)</p>
 <p><b>Public keys (3).</b></p>
 <pre>Y_A = α^X_A mod q = 5³ mod 7 = 125 mod 7 = 6      (125 = 17 × 7 + 6)
 Y_B = α^X_B mod q = 5⁶ mod 7 = 15625 mod 7 = 1    (from the table, 5⁶ ≡ 1)</pre>
