@@ -19,6 +19,11 @@ const Meta = ({ t }) => (
 
 const Lessons = ({ id }) => (YT[id] ? <Vids id={id} /> : <NoVideo />);
 
+const FOCUS = [
+  ['III', 'Public key cryptography', 'm3-1'], ['III', 'Elliptic curve cryptography', 'm3-6'], ['III', 'Man-in-the-middle attack', 'm3-3'], ['III', 'RSA problem', 'm3-2'], ['III', 'Diffie–Hellman problem', 'm3-3'],
+  ['IV', 'Message authentication code (MAC)', 'm4-3'], ['IV', 'MD5', 'm4-5'], ['IV', 'SHA', 'm4-6'], ['IV', 'Digital signature', 'm4-8'], ['IV', 'Hash algorithms', 'm4-4'],
+];
+
 const SEQ = [
   ['Public key cryptosystems', 'm3-1'], ['RSA algorithm', 'm3-2'], ['Diffie–Hellman key exchange', 'm3-3'], ['Key management', 'm3-4'],
   ['Elliptic curve arithmetic', 'm3-5'], ['Elliptic Curve Cryptography', 'm3-6'],
@@ -45,6 +50,15 @@ export function Home() {
           <figcaption>This is the RSA question from last year’s paper, running live. Change any number and every step updates: n, φ(n), d, the square-and-multiply table for C, and the decryption back to M. More calculators sit inside the topics.</figcaption>
         </figure>
       </section>
+
+      <h2>Your focus list</h2>
+      <p>The ten topics you flagged, in order. Each link opens the notes, the worked numerical and the exam answers.</p>
+      <table>
+        <thead><tr><th>Module</th><th>Topic</th><th>Go to</th></tr></thead>
+        <tbody>
+          {FOCUS.map(([m, name, id]) => <tr key={name}><td>{m}</td><td>{name}</td><td><a href={'#' + id}>{T.find((t) => t.id === id).title}</a></td></tr>)}
+        </tbody>
+      </table>
 
       <h2>Study sequence</h2>
       <ol className="order">
