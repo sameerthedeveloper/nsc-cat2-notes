@@ -88,7 +88,7 @@ export function Rsa() {
         <Num label="e" value={f.e} onChange={set('e')} w={70} /><Num label="M" value={f.M} onChange={set('M')} w={70} />
       </div>
       <div className="row"><span className="mini">Try:</span>
-        {[['11, 13, e 11, M 7 (CAT-2)', ['11', '13', '11', '7']], ['3, 11, e 7, M 5', ['3', '11', '7', '5']], ['17, 11, e 7, M 88', ['17', '11', '7', '88']], ['5, 11, e 3, M 9', ['5', '11', '3', '9']]].map(([l, v]) => (
+        {[['11, 13, e 11, M 7 (CAT-2)', ['11', '13', '11', '7']], ['3, 11, e 7, M 5', ['3', '11', '7', '5']], ['17, 11, e 7, M 88', ['17', '11', '7', '88']], ['5, 7, e 5, M 5 (C = 10)', ['5', '7', '5', '5']], ['5, 11, e 3, M 9', ['5', '11', '3', '9']]].map(([l, v]) => (
           <button key={l} className="btn sm" type="button" onClick={() => setF({ p: v[0], q: v[1], e: v[2], M: v[3] })}>{l}</button>))}
       </div>
       {o.err && <Verdict>{o.err}</Verdict>}

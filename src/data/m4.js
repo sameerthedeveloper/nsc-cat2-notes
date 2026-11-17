@@ -6,6 +6,8 @@ export const T4 = [
     tags: 'authentication requirements attacks masquerade replay content modification sequence timing repudiation integrity',
     body: `
 <div class="def"><b>Message authentication</b> is a procedure that lets the receiver verify that a message is <b>genuine</b>: it comes from the claimed source (authentic source) and has <b>not been altered</b> (integrity), and that it is <b>timely</b> and in the right sequence.</div>
+<h2>Requirements</h2>
+<ol><li>Verify that the received message <b>came from the alleged source</b> and was <b>not altered</b>.</li><li>Verify <b>sequencing and timeliness</b> (no replay, no reordering).</li><li>Digital signatures add <b>source non-repudiation</b>: the sender cannot later deny sending.</li></ol>
 <h2>Attacks that authentication must stop</h2>
 <table><tr><th>Attack</th><th>Meaning</th></tr>
 <tr><td>Disclosure</td><td>Message contents released to someone without the right key</td></tr>
@@ -44,13 +46,17 @@ export const T4 = [
 <p>A fixed-size tag T = MAC(K, M) computed with a shared secret K and appended to the message. See the MAC topic.</p>
 <h2>3. Hash function</h2>
 <p>A function H(M) mapping any message to a fixed-length digest. On its own it gives no authentication, so the digest is protected: encrypted with a symmetric key, signed with a private key (digital signature), or mixed with a secret value.</p>
-<h2>Ways to use a hash for authentication</h2>
-<table><tr><th>Scheme</th><th>Provides</th></tr>
-<tr><td>M ‖ E(K, H(M))</td><td>Authentication, integrity</td></tr>
-<tr><td>E(K, M ‖ H(M))</td><td>Authentication, integrity, confidentiality</td></tr>
-<tr><td>M ‖ E(KR<sub>a</sub>, H(M))</td><td>Authentication, integrity, signature</td></tr>
-<tr><td>M ‖ H(M ‖ S) (S shared secret)</td><td>Authentication, integrity, without any encryption</td></tr>
-<tr><td>E(K, M ‖ H(M ‖ S))</td><td>All of the above plus confidentiality</td></tr></table>
+<h2>Six ways to use a hash for authentication</h2>
+<p>A hash H(M) takes only the message (no key), so the hash code must be protected. There are six standard methods:</p>
+<table><tr><th>Method</th><th>Sent</th><th>Gives</th></tr>
+<tr><td>1</td><td>E(K, M ‖ H(M))</td><td>Authentication and confidentiality (encrypt message and hash together)</td></tr>
+<tr><td>2</td><td>M ‖ E(K, H(M))</td><td>Authentication only (only the hash is encrypted)</td></tr>
+<tr><td>3</td><td>M ‖ E(KR<sub>a</sub>, H(M))</td><td>Authentication and digital signature</td></tr>
+<tr><td>4</td><td>E(K, M ‖ E(KR<sub>a</sub>, H(M)))</td><td>Signature and confidentiality</td></tr>
+<tr><td>5</td><td>M ‖ H(M ‖ S)</td><td>Authentication using a shared secret S, no encryption</td></tr>
+<tr><td>6</td><td>E(K, M ‖ H(M ‖ S))</td><td>Authentication and confidentiality with a shared secret</td></tr></table>
+<div data-w="diag:hashmethods"></div>
+<p><b>Why method 5 is popular:</b> encryption software is slow and costly, and encryption hardware can be tied to patents or export limits. A secret value S mixed into the hash gives authentication without any encryption. This idea led to HMAC.</p>
 <h2>Which to use</h2>
 <table><tr><th>Function</th><th>Strength</th><th>Weakness</th></tr>
 <tr><td>Encryption</td><td>Authenticates and hides in one step</td><td>Slow; needs redundancy in the plaintext</td></tr>
@@ -59,7 +65,8 @@ export const T4 = [
     qa: [
       Q(2, 'Name the three types of authentication functions.', 'Message encryption, message authentication code (MAC), and hash function.'),
       Q(5, 'Explain how public key encryption provides confidentiality, authentication and both.', 'Use the three public key modes with formulas: E(KU_b, M), E(KR_a, M) and E(KU_b, E(KR_a, M)), with what each gives and the cost.'),
-      Q(8, 'Discuss the authentication functions with suitable schemes.', '<p>Two levels (1). Encryption modes (3). MAC (2). Hash with the five schemes (2).</p>'),
+      Q(8, 'Discuss the authentication functions with suitable schemes.', '<p>Two levels (1). Encryption modes (3). MAC (2). Hash with the six methods and what each provides (2).</p>'),
+      Q(8, 'Explain the six methods of message authentication using a hash function, with diagrams.', '<p>One line on why the hash must be protected (1). For each method write the sent form and what it provides (1 each) and draw the diagram for as many as time allows: 1 E(K, M ‖ H(M)), 2 M ‖ E(K, H(M)), 3 M ‖ E(KR<sub>a</sub>, H(M)), 4 E(K, M ‖ E(KR<sub>a</sub>, H(M))), 5 M ‖ H(M ‖ S), 6 E(K, M ‖ H(M ‖ S)) (5).</p><p>Note the reason for method 5 (no encryption cost) (1). Receiver steps: decrypt, recompute, compare (1).</p>'),
     ],
   },
   {
@@ -70,18 +77,29 @@ export const T4 = [
 <h2>How it works</h2>
 <ol><li>Sender computes T = MAC(K, M) and sends M ‖ T.</li><li>Receiver recomputes MAC(K, M′) on the received message.</li><li>If it equals the received T, the message is accepted: it is <b>unaltered</b> (integrity) and came from the <b>key holder</b> (authentication). Otherwise it is rejected.</li></ol>
 <div data-w="diag:macauth"></div>
+<h2>Three basic uses of a MAC</h2>
+<ol><li><b>Authentication only:</b> send M ‖ MAC(K, M).</li><li><b>Authentication tied to plaintext:</b> T = MAC(K₁, M), send E(K₂, M ‖ T). The receiver decrypts, then checks the MAC on the plaintext.</li><li><b>Authentication tied to ciphertext:</b> C = E(K₂, M), send C ‖ MAC(K₁, C). The receiver checks the MAC on the ciphertext first.</li></ol>
 <h2>MAC with confidentiality</h2>
 <p>A MAC does not hide M. For secrecy add encryption with a second key:</p>
 <ul><li><b>Authenticate then encrypt:</b> T = MAC(K<sub>1</sub>, M), send E(K<sub>2</sub>, M ‖ T).</li><li><b>Encrypt then authenticate:</b> C = E(K<sub>2</sub>, M), T = MAC(K<sub>1</sub>, C), send C ‖ T. This is the preferred order because forged ciphertext is rejected before decryption.</li></ul>
 <div data-w="diag:macconf"></div>
+<div data-w="diag:macconf2"></div>
 <h2>Requirements</h2>
 <ul><li>Knowing M and T, it is computationally infeasible to find M′ with the same T (no forging).</li><li>Tags are uniformly distributed.</li><li>The tag depends equally on every bit of the message.</li></ul>
 <h2>Applications</h2>
 <ul><li>Message authentication when only one side needs to be sure (one party's broadcast, selected messages in a heavy load).</li><li>Integrity of stored files and software when no secrecy is needed.</li><li>Network protocols: IPsec (HMAC), TLS records, SSH, Wi-Fi and banking messages.</li><li>Challenge-response authentication.</li></ul>
+<h2>Security of MACs</h2>
+<ul><li><b>Computation resistance:</b> given one or more pairs [x<sub>i</sub>, MAC(K, x<sub>i</sub>)], it is infeasible to compute a valid pair [x, MAC(K, x)] for any new x ≠ x<sub>i</sub>.</li><li><b>Brute force:</b> harder than on a hash because the attacker needs known message and tag pairs. Effort is min(2<sup>k</sup>, 2<sup>n</sup>).</li><li><b>Cryptanalysis:</b> an ideal MAC needs an effort at least equal to brute force.</li></ul>
 <h2>Constructions</h2>
-<p><b>Data Authentication Algorithm (DAA):</b> DES in CBC mode, last block (or leftmost bits) is the tag. Weak for variable-length messages. <b>CMAC:</b> improved CBC-MAC with AES. <b>HMAC:</b> built from a hash:</p>
+<p><b>1. HMAC (based on a hash).</b></p>
+<p><b>Design objectives:</b> (1) use available hash functions without modification; (2) allow the embedded hash to be replaced easily if a faster or stronger one appears; (3) preserve the original hash speed; (4) handle keys in a simple way; (5) have a well understood analysis of the strength of the mechanism based on reasonable assumptions about the hash.</p>
+<p><b>Notation:</b> H = embedded hash (MD5, SHA-1); b = block size in bits; n = hash length; K = secret key (recommended length ≥ n; a key longer than b is hashed first); K⁺ = K padded with zeros on the left to b bits; ipad = 00110110 (0x36) repeated b/8 times; opad = 01011100 (0x5C) repeated b/8 times.</p>
 <p><code>HMAC(K, M) = H[ (K⁺ ⊕ opad) ‖ H[ (K⁺ ⊕ ipad) ‖ M ] ]</code></p>
-<p>K⁺ is K padded with zeros to the hash block size, ipad = 0x36 repeated, opad = 0x5C repeated. The inner hash covers the message, the outer hash covers the inner result with a different key mask. HMAC resists length-extension attacks that break the naive H(K ‖ M).</p>
+<div data-w="diag:hmac"></div>
+<ol><li>Append zeros to the left of K to make the b-bit string K⁺.</li><li>XOR K⁺ with ipad to get the b-bit block S<sub>i</sub>.</li><li>Append M to S<sub>i</sub>.</li><li>Apply H to the stream from step 3.</li><li>XOR K⁺ with opad to get the b-bit block S<sub>o</sub>.</li><li>Append the hash result of step 4 to S<sub>o</sub>.</li><li>Apply H to the stream from step 6 and output the result.</li></ol>
+<p>HMAC resists length-extension attacks that break the naive H(K ‖ M).</p>
+<p><b>2. DAA (Data Authentication Algorithm).</b> DES in CBC mode with zero IV. Blocks D₁ … D<sub>N</sub>: O₁ = E(K, D₁), O₂ = E(K, D₂ ⊕ O₁), O₃ = E(K, D₃ ⊕ O₂), … O<sub>N</sub> = E(K, D<sub>N</sub> ⊕ O<sub>N−1</sub>). The DAC is O<sub>N</sub> or its leftmost 16 to 64 bits. It is weak for variable-length messages.</p>
+<p><b>3. CMAC (Cipher-based MAC).</b> Improves DAA using AES or triple DES for messages of any length. Blocks M₁ … M<sub>n</sub>, key K, derived constants K₁ and K₂: C₁ = E(K, M₁), C₂ = E(K, M₂ ⊕ C₁), … C<sub>n</sub> = E(K, M<sub>n</sub> ⊕ C<sub>n−1</sub> ⊕ K₁), tag T = MSB<sub>Tlen</sub>(C<sub>n</sub>) (the Tlen leftmost bits). If the last block is incomplete, pad it on the right with a 1 and as many 0s as needed, and use K₂ instead of K₁.</p>
 <div data-w="mac"></div>
 <h2>Limits</h2>
 <p>Sender and receiver share K, so either could create the tag. A MAC therefore cannot prove <b>to a third party</b> who sent it, and gives no non-repudiation. A digital signature does.</p>
@@ -102,7 +120,9 @@ export const T4 = [
       Q(2, 'Why does a MAC not give non-repudiation?', 'Both parties hold the same key, so either could have produced the tag. A third party cannot tell who did.'),
       Q(5, 'Differentiate MAC and hash function.', 'Use the MAC versus hash table: key, what it provides, who can compute, effect of tampering.'),
       Q(5, 'Explain HMAC.', 'Give the formula, ipad and opad, inner and outer hash, why it is preferred over H(K ‖ M), and the hash it can use (SHA-256).'),
-      Q(8, 'Describe the concept of MAC and elaborate its applications for message authentication and confidentiality with a neat diagram.', '<p><b>Concept (2).</b> Definition, T = MAC(K, M), shared key.</p><p><b>Authentication diagram (2).</b> Sender computes and appends; receiver recomputes and compares.</p><p><b>Confidentiality (2.5).</b> Authenticate then encrypt: E(K<sub>2</sub>, M ‖ MAC(K<sub>1</sub>, M)). Encrypt then authenticate: C ‖ MAC(K<sub>1</sub>, C). Draw the second diagram.</p><p><b>Applications (1.5).</b> IPsec, TLS, SSH, challenge-response, file integrity. Limit: no non-repudiation.</p>'),
+      Q(8, 'Explain the structure of HMAC with its design objectives.', '<p>Five design objectives (2). Notation K⁺, ipad, opad, b, n (1). Formula (1). Seven steps with the diagram (3). Why secure: two nested hashes, length extension blocked (1).</p>'),
+      Q(5, 'Differentiate DAA and CMAC.', 'DAA is DES-CBC with a zero IV and takes the last block as tag; it is weak for variable-length messages. CMAC uses AES or 3DES with K₁ (complete last block) or K₂ (padded last block) and takes the leftmost Tlen bits of C<sub>n</sub>; it is secure for messages of any length.'),
+      Q(8, 'Describe the concept of MAC and elaborate its applications for message authentication and confidentiality with a neat diagram.', '<p><b>Concept (2).</b> Definition, T = MAC(K, M), shared key.</p><p><b>Authentication diagram (2).</b> Sender computes and appends; receiver recomputes and compares.</p><p><b>Confidentiality (2.5).</b> Authentication tied to plaintext: E(K<sub>2</sub>, M ‖ MAC(K<sub>1</sub>, M)). Authentication tied to ciphertext: C = E(K<sub>2</sub>, M), send C ‖ MAC(K<sub>1</sub>, C). Draw both diagrams.</p><p><b>Applications (1.5).</b> IPsec, TLS, SSH, challenge-response, file integrity. Limit: no non-repudiation.</p>'),
     ],
   },
   {
@@ -125,6 +145,7 @@ export const T4 = [
 <h2>General structure: Merkle–Damgård</h2>
 <p>Most hashes (MD5, SHA-1, SHA-2) use an <b>iterated</b> design. Pad the message and append its length, split into N blocks Y₁…Y<sub>N</sub>, and chain a <b>compression function f</b>: CV₀ = IV, CV<sub>i</sub> = f(CV<sub>i−1</sub>, Y<sub>i</sub>), H(M) = CV<sub>N</sub>. If f is collision resistant, so is the whole hash.</p>
 <div data-w="diag:md"></div>
+<p><b>Hash versus MAC.</b> A hash is like a MAC (variable-size input, fixed-size output, called hash code, hash value or message digest), but it uses <b>no key</b>: the message is the only input. See <a href="#m4-2">authentication functions</a> for the six ways to protect a hash code.</p>
 <h2>Applications</h2>
 <ul><li>Message authentication (inside HMAC) and digital signatures (sign the digest, not the message).</li><li>File and software integrity checks, checksums, forensics.</li><li>Password storage (salted hash).</li><li>One-way passwords, key derivation, blockchain proof of work, deduplication.</li></ul>
 <h2>Types of hash algorithms</h2>
@@ -215,6 +236,13 @@ export const T4 = [
 <tr><td>40–59</td><td>(B ∧ C) ∨ (B ∧ D) ∨ (C ∧ D)</td><td>8F1BBCDC</td></tr>
 <tr><td>60–79</td><td>B ⊕ C ⊕ D</td><td>CA62C1D6</td></tr></table>
 <div data-w="hash"></div>
+<h2>SHA-1 compression function</h2>
+<div data-w="diag:sha1"></div>
+<p>One step: <code>(A, B, C, D, E) ← (E + f(t, B, C, D) + S⁵(A) + W<sub>t</sub> + K<sub>t</sub>, A, S³⁰(B), C, D)</code>, where S<sup>k</sup> is a circular left shift by k bits and + is addition mod 2³².</p>
+<ul><li><b>f(t, B, C, D)</b>: steps 0–19 use the <b>conditional</b> function (if B then C else D); steps 20–39 and 60–79 use the <b>parity</b> function (B ⊕ C ⊕ D); steps 40–59 use the <b>majority</b> function (true if two or three of the inputs are true).</li><li><b>W<sub>t</sub></b>: the first 16 words are the block itself; for t = 16…79, W<sub>t</sub> = S¹(W<sub>t−16</sub> ⊕ W<sub>t−14</sub> ⊕ W<sub>t−8</sub> ⊕ W<sub>t−3</sub>).</li><li>The output of the 80th step is added word by word (mod 2³²) to the input chaining value.</li></ul>
+<pre>CV₀ = IV
+CV_(q+1) = SUM32( CV_q, ABCDE_q )
+MD = CV_L        (L = number of 512-bit blocks)</pre>
 <h2>The SHA family</h2>
 <table><tr><th></th><th>SHA-1</th><th>SHA-256</th><th>SHA-384</th><th>SHA-512</th></tr>
 <tr><td>Digest (bits)</td><td>160</td><td>256</td><td>384</td><td>512</td></tr>
@@ -275,6 +303,12 @@ export const T4 = [
     tags: 'digital signature rsa signature non repudiation direct arbitrated requirements properties forgery',
     body: `
 <div class="def"><b>Definition.</b> A digital signature is data that proves the <b>origin and integrity</b> of a message and that the sender cannot later deny sending it (<b>non-repudiation</b>). Message authentication protects two parties from a third party; a signature also protects them from each other.</div>
+<h2>Why we need it</h2>
+<p>Alice emails Bob "I will pay you on the 24th". Later she denies saying it. Message authentication cannot settle this, because Bob could have forged a MAC with the shared key. A signature depends on Alice's private key alone, so Bob can show the signed message to a third party as proof, and Alice cannot deny it.</p>
+<p>It is one of the major applications of public key cryptography, providing message authentication, message integrity and non-repudiation.</p>
+<h2>Three algorithms</h2>
+<ol><li><b>Key generation:</b> produces the signer's private key (the unique information) and public key.</li><li><b>Signing:</b> input = message and private key, output = digital signature.</li><li><b>Verification:</b> at the receiver, input = message, signature and public key, output = valid or not valid.</li></ol>
+<div data-w="diag:dsgen"></div>
 <h2>Properties</h2>
 <ul><li>Verifies the <b>author</b>, the <b>date and time</b> of the signature.</li><li>Authenticates the <b>contents</b> at the time of signing.</li><li>Can be <b>verified by third parties</b> to settle disputes.</li></ul>
 <h2>Requirements</h2>

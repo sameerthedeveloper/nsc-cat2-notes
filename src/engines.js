@@ -143,7 +143,7 @@ export const DIAG = {
     [['m', 'e'], ['e', 'c'], ['c', 'd'], ['d', 'o'], ['pr', 'e'], ['pu', 'd']], 680, 175, { label: 'Public key use for authentication' }),
   dhmitm: () => netSVG([hop('a1', 70, 30, 'Alice', 'hi', 90), hop('m1', 330, 30, 'Mallory', 'bad', 100), hop('b1', 590, 30, 'Bob', 'hi', 90), hop('b2', 590, 110, 'Bob', 'hi', 90), hop('m2', 330, 110, 'Mallory', 'bad', 100), hop('a2', 70, 110, 'Alice', 'hi', 90)],
     [['a1', 'm1', 'Y_A'], ['m1', 'b1', 'Y_M (fake, in place of Y_A)'], ['b2', 'm2', 'Y_B'], ['m2', 'a2', 'Y_M (fake, in place of Y_B)']], 660, 145, { label: 'Man in the middle on Diffie-Hellman' }),
-  macauth: () => netSVG([hop('m', 60, 50, 'Message M', '', 100), hop('mac', 230, 50, 'MAC(K, M)', 'hi', 100), hop('t', 230, 130, 'Tag T', 'prop', 70), hop('rx', 420, 90, 'Receiver', '', 90), hop('cmp', 590, 90, 'Recompute and compare', 'hi', 150)],
+  macauth: () => netSVG([hop('m', 60, 50, 'Message M', '', 100), hop('mac', 230, 50, 'MAC(K, M)', 'hi', 100), hop('t', 230, 130, 'Tag T', 'prop', 70), hop('rx', 420, 90, 'Receiver', '', 90), hop('cmp', 585, 90, 'Recompute and compare', 'hi', 175)],
     [['m', 'mac'], ['mac', 't'], ['t', 'rx', 'M ‖ T'], ['rx', 'cmp']], 680, 150, { label: 'MAC for authentication' }),
   macconf: () => netSVG([hop('m', 50, 50, 'M', '', 50), hop('mac', 150, 50, 'MAC(K1, M)', 'hi', 100), hop('en', 300, 50, 'Encrypt K2', 'hi', 100), hop('c', 440, 50, 'Ciphertext', '', 90), hop('de', 440, 130, 'Decrypt K2', 'hi', 100), hop('v', 590, 130, 'Check MAC K1', 'hi', 110)],
     [['m', 'mac', 'M ‖ T'], ['mac', 'en'], ['en', 'c'], ['c', 'de'], ['de', 'v']], 680, 170, { label: 'MAC with confidentiality' }),
@@ -156,3 +156,23 @@ export const DIAG = {
   ns: () => netSVG([hop('a1', 70, 25, 'Alice', 'hi', 90), hop('b1', 420, 25, 'Bob', 'hi', 90), hop('b2', 420, 85, 'Bob', 'hi', 90), hop('a2', 70, 85, 'Alice', 'hi', 90), hop('a3', 70, 145, 'Alice', 'hi', 90), hop('b3', 420, 145, 'Bob', 'hi', 90)],
     [['a1', 'b1', '1. A, N_a'], ['b2', 'a2', '2. E(K, [N_a, N_b])'], ['a3', 'b3', '3. E(K, N_b)']], 490, 175, { label: 'Challenge response with nonces' }),
 };
+
+const lane = (title, nodes, edges, W = 680, H = 80) => `<h4 style="margin:14px 0 4px">${title}</h4>` + netSVG(nodes, edges, W, H, { label: title });
+DIAG.macconf2 = () => netSVG([hop('m', 50, 50, 'M', '', 50), hop('en', 170, 50, 'Encrypt K₂', 'hi', 100), hop('c', 300, 50, 'C', '', 50), hop('mac', 300, 130, 'MAC(K₁, C)', 'hi', 110), hop('s', 470, 90, 'C ‖ T', 'prop', 80), hop('v', 610, 90, 'Check, then decrypt', 'hi', 150)],
+  [['m', 'en'], ['en', 'c'], ['c', 'mac'], ['c', 's'], ['mac', 's'], ['s', 'v']], 690, 170, { label: 'MAC tied to ciphertext' });
+DIAG.hmac = () => netSVG([hop('k', 60, 40, 'K⁺ (padded key)', 'prop', 110), hop('x1', 210, 40, '⊕ ipad → S_i', 'hi', 110), hop('h1', 360, 40, 'H( S_i ‖ M )', 'hi', 110), hop('m', 360, 120, 'Message M', '', 100), hop('x2', 210, 120, '⊕ opad → S_o', 'hi', 110), hop('h2', 530, 80, 'H( S_o ‖ inner )', 'hi', 130), hop('o', 650, 80, 'MAC', 'prop', 50)],
+  [['k', 'x1'], ['x1', 'h1'], ['m', 'h1'], ['x2', 'h2'], ['h1', 'h2', 'n-bit'], ['h2', 'o']], 690, 160, { label: 'HMAC structure' });
+DIAG.sha1 = () => netSVG([hop('cv', 60, 40, 'CV_q (A B C D E)', 'prop', 110), hop('r', 220, 40, '80 steps: 4 rounds × 20', 'hi', 170), hop('y', 220, 120, 'Block Y_q → W_t', '', 120), hop('k', 380, 120, 'K_t', 'prop', 50), hop('sum', 400, 40, 'SUM32 (mod 2³²)', 'hi', 120), hop('cv2', 560, 40, 'CV_{q+1}', 'prop', 90)],
+  [['cv', 'r'], ['y', 'r'], ['k', 'r'], ['r', 'sum'], ['cv', 'sum', '', 1], ['sum', 'cv2']], 640, 160, { label: 'SHA-1 compression function' });
+DIAG.dsgen = () => netSVG([hop('kg', 70, 40, 'Key generation', 'hi', 110), hop('pr', 70, 120, 'Private key', 'prop', 100), hop('sg', 250, 120, 'Signing algorithm', 'hi', 130), hop('m', 250, 40, 'Message M', '', 100), hop('sig', 420, 120, 'Signature', 'prop', 80), hop('vf', 570, 80, 'Verification algorithm', 'hi', 160), hop('pub', 570, 20, 'Public key', 'prop', 90)],
+  [['kg', 'pr'], ['pr', 'sg'], ['m', 'sg'], ['sg', 'sig'], ['sig', 'vf', 'M ‖ sig'], ['pub', 'vf'], ['m', 'vf', '', 1]], 690, 160, { label: 'Generic digital signature model' });
+const HM = [
+  ['1. E(K, M ‖ H(M)): authentication and confidentiality', 'E(K, M ‖ H(M))', 'Decrypt, recompute H, compare'],
+  ['2. M ‖ E(K, H(M)): authentication only', 'M ‖ E(K, H(M))', 'Decrypt code, recompute H, compare'],
+  ['3. M ‖ E(KR_a, H(M)): authentication and digital signature', 'M ‖ E(KR_a, H(M))', 'Decrypt with KU_a, recompute, compare'],
+  ['4. E(K, M ‖ E(KR_a, H(M))): signature and confidentiality', 'E(K, M ‖ E(KR_a, H(M)))', 'Decrypt, verify with KU_a'],
+  ['5. M ‖ H(M ‖ S): authentication with a shared secret, no encryption', 'M ‖ H(M ‖ S)', 'Append S, hash, compare'],
+  ['6. E(K, M ‖ H(M ‖ S)): authentication and confidentiality', 'E(K, M ‖ H(M ‖ S))', 'Decrypt, hash M ‖ S, compare'],
+];
+const tw = (t) => Math.round(t.length * 8 + 24);
+DIAG.hashmethods = () => HM.map(([t, send, chk]) => { const wb = tw(send), wc = tw(chk); return lane(t, [hop('a', 55, 40, 'Message M', '', 90), hop('b', 55 + 45 + 40 + wb / 2, 40, send, 'hi', wb), hop('c', 700 - 8 - wc / 2, 40, chk, 'prop', wc)], [['a', 'b', 'sender'], ['b', 'c', 'channel']], 700, 80); }).join('');
