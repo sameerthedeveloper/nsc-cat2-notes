@@ -310,3 +310,9 @@ svg.net .held{font:600 11px var(--mono)}
 .hero>*{min-width:0}
 @media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr)}}
 .wg pre{white-space:pre;overflow-x:auto}
+
+/* site visit counter */
+.foot{max-width:820px;margin:-50px auto 0;padding:0 28px 40px 56px;position:relative}
+@media(max-width:700px){.foot{padding:0 16px 32px;margin-top:-60px}}
+.visits{margin:0;font:600 .85rem var(--head);color:var(--graphite)}
+.visits b{color:var(--ink);font-family:var(--mono)}
